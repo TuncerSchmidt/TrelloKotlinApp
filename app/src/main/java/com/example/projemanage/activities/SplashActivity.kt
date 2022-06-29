@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.WindowManager
 import android.widget.TextView
 import com.example.projemanage.R
+import com.example.projemanage.activities.firebase.FirestoreClass
 
 class SplashActivity : AppCompatActivity() {
     private var tv_app_name: TextView?= null
@@ -27,7 +28,13 @@ class SplashActivity : AppCompatActivity() {
         tv_app_name?.typeface = typeFace
 
         Handler().postDelayed({
-            startActivity(Intent(this, IntroActivity::class.java))
+            var currentUserID = FirestoreClass().getCurrentUserId()
+
+            if(currentUserID.isNotEmpty()){
+                startActivity(Intent(this, MainActivity::class.java))
+            }else{
+                startActivity(Intent(this, IntroActivity::class.java))
+            }
             finish()
         }, 2500)
     }

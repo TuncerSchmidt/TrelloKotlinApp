@@ -9,6 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.example.projemanage.R
+import com.example.projemanage.activities.firebase.FirestoreClass
+import com.example.projemanage.activities.models.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import org.w3c.dom.Text
 
 class SignUpActivity : BaseActivity() {
@@ -24,6 +28,13 @@ class SignUpActivity : BaseActivity() {
         )
 
         setupActionBar()
+    }
+
+    fun userRegisteredSuccess(){
+        Toast.makeText(this, "You have successfully registered", Toast.LENGTH_LONG).show()
+        hideProgressDialog()
+        FirebaseAuth.getInstance().signOut()
+        finish()
     }
 
     private fun setupActionBar(){
@@ -49,7 +60,19 @@ class SignUpActivity : BaseActivity() {
         val password: String = findViewById<TextView>(R.id.et_password).text.toString().trim{ it<=' '}
 
         if(validateForm(name, email, password)){
-            Toast.makeText(this@SignUpActivity, "Now we can register a new user.", Toast.LENGTH_SHORT).show()
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener{
+                task ->
+
+                if(task.isSuccessful){
+                    val firebaseUser: FirebaseUser = task.result!!.user!!
+                    val registeredEmail = firebaseUser.email!!
+                    val user = User(firebaseUser.uid, name,registeredEmail)
+                    FirestoreClass().registerUser(this, user)
+                }else{
+                    Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
