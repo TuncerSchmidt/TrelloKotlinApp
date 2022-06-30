@@ -5,13 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Layout
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.bumptech.glide.Glide
 import com.example.projemanage.R
+import com.example.projemanage.activities.firebase.FirestoreClass
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.auth.User
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var drawer_layout: DrawerLayout ?= null
@@ -20,8 +24,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setContentView(R.layout.activity_main)
         drawer_layout = findViewById(R.id.drawer_layout)
 
-        setupActionBar()
         findViewById<NavigationView>(R.id.nav_view).setNavigationItemSelectedListener (this)
+        setupActionBar()
+
+        FirestoreClass().loadUserData(this)
+
+
     }
     private fun setupActionBar(){
         setSupportActionBar(findViewById(R.id.toolbar_main_activity))
@@ -38,6 +46,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    fun updateNavigationUserDetails(user: com.example.projemanage.activities.models.User){
+        Glide.with(this).load(user.image).centerCrop().placeholder(R.drawable.ic_user_place_holder).into(findViewById(R.id.nav_user_image))
+        findViewById<TextView>(R.id.tv_username).text = user.name
+    }
+
     override fun onBackPressed() {
         if(drawer_layout!!.isDrawerOpen(GravityCompat.START)){
             drawer_layout!!.closeDrawer(GravityCompat.START)
@@ -48,8 +61,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.nav_my_profile ->{
-                Toast.makeText(this, "My Profile", Toast.LENGTH_SHORT).show()}
+            R.id.nav_my_profile -> {
+                startActivity(Intent(this, MyProfileActivity::class.java))
+            }
             R.id.nav_sign_out ->{
                 FirebaseAuth.getInstance().signOut()
                 val intent = Intent(this, IntroActivity::class.java)
