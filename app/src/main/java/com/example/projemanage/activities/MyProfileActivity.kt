@@ -8,12 +8,11 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.telecom.Call
 import android.util.Log
+import android.view.View
 import android.webkit.MimeTypeMap
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -22,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.projemanage.R
 import com.example.projemanage.activities.firebase.FirestoreClass
 import com.example.projemanage.activities.models.User
+import com.example.projemanage.activities.utils.Constants
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.storage.FirebaseStorage
@@ -34,6 +34,7 @@ class MyProfileActivity : BaseActivity() {
         private const val PICK_IMAGE_REQUEST_CODE = 2
     }
     private var mSelectedImageFileUri: Uri? = null
+    private lateinit var mUserDetails: User
     private var mProfileImageURL: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,9 @@ class MyProfileActivity : BaseActivity() {
         findViewById<Button>(R.id.btn_update).setOnClickListener{
             if(mSelectedImageFileUri != null){
                 uploadUserImage()
+            }else{
+                showProgressDialog(resources.getString(R.string.please_wait))
+                updateUserProfileData()
             }
         }
     }
@@ -103,6 +107,8 @@ class MyProfileActivity : BaseActivity() {
     }
 
     fun setUserDataInUI(user: User) {
+        mUserDetails = user
+
         Glide.with(this@MyProfileActivity).load(user.image).centerCrop()
             .placeholder(R.drawable.ic_user_place_holder).into(findViewById(R.id.iv_profile_user_image))
         findViewById<AppCompatEditText>(R.id.et_name).setText(user.name)
@@ -112,6 +118,21 @@ class MyProfileActivity : BaseActivity() {
         }
 
     }
+    fun updateUserProfileData(){
+        val userHashMap = HashMap<String, Any>()
+
+        if(mProfileImageURL.isNotEmpty() && mProfileImageURL != mUserDetails.image){
+            userHashMap[Constants.IMAGE] = mProfileImageURL
+        }
+        if(findViewById<TextView>(R.id.et_name).text.toString() != mUserDetails.name){
+            userHashMap[Constants.NAME] = findViewById<TextView>(R.id.et_name).text.toString()
+        }
+        if(findViewById<TextView>(R.id.et_mobile).text.toString() != mUserDetails.mobile.toString()){
+            userHashMap[Constants.MOBILE] = findViewById<TextView>(R.id.et_mobile).text.toString()
+        }
+        FirestoreClass().updateUserProfileData(this, userHashMap)
+    }
+
     private fun uploadUserImage(){
         showProgressDialog(resources.getString(R.string.please_wait))
         if(mSelectedImageFileUri != null){
@@ -123,8 +144,8 @@ class MyProfileActivity : BaseActivity() {
                     uri ->
                     Log.i("Downloadable Image URL", uri.toString())
                     mProfileImageURL = uri.toString()
-                    hideProgressDialog()
-                    //TODO UpdateUserProfileData
+
+                    updateUserProfileData()
                 }
             }.addOnFailureListener{
                 exception ->
@@ -138,5 +159,11 @@ class MyProfileActivity : BaseActivity() {
 
     private fun getFileExtension(uri: Uri?): String?{
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri!!))
+    }
+
+    fun profileUpdateSuccess(){
+        hideProgressDialog()
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 }
