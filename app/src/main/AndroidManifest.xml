@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.projemanage">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,10 +18,15 @@
         android:theme="@style/Theme.Projemanage"
         tools:targetApi="31">
         <activity
-            android:name=".activities.MyProfileActivity"
+            android:name=".activities.CreateBoardActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar."
             android:exported="false" />
+        <activity
+            android:name=".activities.MyProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar." />
         <activity
             android:name=".activities.BaseActivity"
             android:exported="false" />

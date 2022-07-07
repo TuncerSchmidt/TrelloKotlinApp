@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.Glide
 import com.example.projemanage.R
 import com.example.projemanage.activities.firebase.FirestoreClass
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.auth.User
@@ -36,6 +37,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         FirestoreClass().loadUserData(this)
 
+        findViewById<FloatingActionButton>(R.id.fab_create_board).setOnClickListener{
+            startActivity(Intent(this, CreateBoardActivity::class.java))
+        }
 
     }
     private fun setupActionBar(){
