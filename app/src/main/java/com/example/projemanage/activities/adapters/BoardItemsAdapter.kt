@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.projemanage.R
@@ -24,6 +25,7 @@ open class BoardItemsAdapter (private val context: Context, private var list: Ar
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val model = list[position]
         if(holder is MyViewHolder){
+            //this part needs to be fixed
             //Glide.with(context).load(model.image).centerCrop().placeholder(R.drawable.ic_board_place_holder).into(holder.itemView.findViewById(R.id.iv_board_image))
             holder.itemView.findViewById<TextView>(R.id.tv_name).text = model.name
             holder.itemView.findViewById<TextView>(R.id.tv_created_by).text = "Created by: ${model.createdBy}"
@@ -42,6 +44,10 @@ open class BoardItemsAdapter (private val context: Context, private var list: Ar
 
     interface OnClickListener{
         fun onClick(position: Int, model: Board)
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener){
+        this.onClickListener = onClickListener
     }
 
     private class MyViewHolder(view: View) : RecyclerView.ViewHolder(view)

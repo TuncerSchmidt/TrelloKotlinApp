@@ -8,6 +8,7 @@ import com.example.projemanage.activities.models.Board
 import com.example.projemanage.activities.models.User
 import com.example.projemanage.activities.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 
@@ -33,6 +34,17 @@ class FirestoreClass {
 
         }
         return currentUserID
+    }
+    fun getBoardDetails(activity: TaskListActivity, documentId: String){
+        mFireStore.collection(Constants.BOARDS).document(documentId).get().addOnSuccessListener {
+                document -> Log.i(activity.javaClass.simpleName, document.toString())
+
+            activity.boardDetails(document.toObject(Board::class.java)!!)
+        }.addOnFailureListener{
+                e->
+            activity.hideProgressDialog()
+            Log.e(activity.javaClass.simpleName, "Error while creating board", e)
+        }
     }
 
     fun createBoard(activity: CreateBoardActivity, board: Board){

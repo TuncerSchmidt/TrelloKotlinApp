@@ -98,7 +98,8 @@ class MyProfileActivity : BaseActivity() {
         }
         findViewById<Toolbar>(R.id.toolbar_my_profile_activity).setNavigationOnClickListener { onBackPressed() }
     }
-
+    //error fix
+    
     fun setUserDataInUI(user: User) {
         mUserDetails = user
 
